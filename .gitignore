@@ -305,3 +305,5 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
 data/
+torch_models/
+sandbox/.vector_cache
