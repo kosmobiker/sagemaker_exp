@@ -307,3 +307,5 @@ cython_debug/
 data/
 torch_models/
 sandbox/.vector_cache
+loggings/
+tmp/
