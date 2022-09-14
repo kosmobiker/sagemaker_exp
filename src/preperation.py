@@ -27,7 +27,7 @@ def transform_raw_data(df: pd.DataFrame):
     df['comment_text'] = df['comment_text'].fillna(" ")
     identity_columns = ['male', 'female', 'homosexual_gay_or_lesbian', 'christian', 'jewish', 'muslim', 'black', 'white', 'psychiatric_or_mental_illness']
     for col in identity_columns + ['toxicity']:
-        df.loc[:, col] = np.where(df[col] >= 0.5, 1, 0)
+        df.loc[:, col] = np.where(df[col] >= 0.5, True, False)
     col_to_drop = [col for col in df.columns if col not in identity_columns + ['toxicity', 'comment_text', 'split']]
     df = df.drop(col_to_drop, axis=1)
     train_df = df[df['split'] == 'train']
@@ -40,12 +40,15 @@ def transform_raw_data(df: pd.DataFrame):
     # clean misspellings
     train_text['comment_text'] = train_text['comment_text'].apply(replace_typical_misspell)
     val_text['comment_text'] = val_text['comment_text'].apply(replace_typical_misspell)
+    test_df['comment_text'] = test_df['comment_text'].apply(replace_typical_misspell)
     # clean the text
     train_text['comment_text'] = train_text['comment_text'].apply(clean_text)
     val_text['comment_text'] = val_text['comment_text'].apply(clean_text)
+    test_df['comment_text'] = test_df['comment_text'].apply(clean_text)
     # clean numbers
     train_text['comment_text'] = train_text['comment_text'].apply(clean_numbers)
     val_text['comment_text'] = val_text['comment_text'].apply(clean_numbers)
+    test_df['comment_text'] = test_df['comment_text'].apply(clean_numbers)
     try:
         wr.s3.to_csv(train_text, f"s3://{BUCKET_NAME}/data/train/train.csv", index=False)
         wr.s3.to_csv(val_text, f"s3://{BUCKET_NAME}/data/validate/validate.csv", index=False)
