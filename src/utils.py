@@ -170,3 +170,4 @@ def clean_text(x):
 
 def clean_numbers(x):
     return re.sub('\d+', ' ', x)
+

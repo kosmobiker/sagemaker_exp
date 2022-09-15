@@ -9,7 +9,7 @@ BPSN_AUC = 'bpsn_auc'  # stands for background positive, subgroup negative
 BNSP_AUC = 'bnsp_auc'  # stands for background negative, subgroup positive
 TODAY = datetime.today().strftime("%Y%m%d")
 PATH_LOGS = 'loggings'
-log = setup_applevel_logger(file_name = f"{PATH_LOGS}/logs_{TODAY}") 
+
 
 
 def compute_auc(y_true, y_pred):

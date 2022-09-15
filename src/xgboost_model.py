@@ -26,14 +26,7 @@ DICTIONARY_PATH = "xgboost/dictionary"
 MODEL_PATH = "xgboost/models"
 PATH_LOGS = 'loggings'
 
-def simple_preproc(text):
-    """
-    It is a generator to preprocess texts.
-    This lowercases, tokenizes, de-accents (optional) 
-    the output are final tokens = unicode strings, that won’t be processed any further.
-    """
-    for line in text:
-        yield simple_preprocess(line)
+
 
 def main(xgb_params):
         #reading the files
