@@ -2,6 +2,7 @@ import os
 import time
 import awswrangler as wr
 import pandas as pd
+import numpy as np
 from gensim.utils import simple_preprocess
 from gensim import corpora
 from gensim.utils import simple_preprocess
@@ -52,8 +53,6 @@ def main(xgb_params):
         bow_train = [dictionary.doc2bow(doc, allow_update=True) for doc in tqdm(simple_preproc(train_text))]
         bow_val = [dictionary.doc2bow(doc, allow_update=False) for doc in tqdm(simple_preproc(val_text))]
         bow_test = [dictionary.doc2bow(doc, allow_update=False) for doc in tqdm(simple_preproc(test_text))]
-        dictionary.filter_extremes(no_below=10, no_above=0.5, keep_n=50000)
-        dictionary.compactify()
         # MmCorpus.serialize(f'tmp/bow_corpus_{TODAY}.mm', bow_train)  # save corpus to disk 
         # save_to_s3(BUCKET_NAME, f'tmp/bow_corpus_{TODAY}.mm', f"{DICTIONARY_PATH}/bow_corpus_{TODAY}.mm")
         log.info('Corpus was uploaded to S3')
@@ -64,7 +63,7 @@ def main(xgb_params):
         num_terms = len(dictionary.keys())
         log.info(f"Number of docs is {num_docs}, there are {num_terms} words in dictionary")
         #creating of TF-IDF matrices
-        tfidf = models.TfidfModel(bow_train, dictionary=dictionary, smartirs='ntc')
+        tfidf = models.TfidfModel(bow_train, dictionary=dictionary)
         train_tfidf = tfidf[bow_train]
         val_tfidf = tfidf[bow_val]
         test_tfidf = tfidf[bow_test]
@@ -81,16 +80,18 @@ def main(xgb_params):
         xgb_model.save_model(f"tmp/xgb_model_{TODAY}.json")
         save_to_s3(BUCKET_NAME, f"tmp/xgb_model_{TODAY}.json", f"{MODEL_PATH}/xgb_model_{TODAY}.json")
         log.info(f'XGboost model was trained and saved to S3. Time spent is {end-start} seconds')
-        lof.info("Let's make predictions...")
+        log.info("Let's make predictions...")
         #predictions
-        predictions = xgboost_model.predict_proba(test_tfidf_sparse)[:, 1]
+        predictions = xgb_model.predict_proba(test_tfidf_sparse)[:, 1]
+        np.savetxt(f"/tmp/xgboost_predictions_{TODAY}.csv", predictions, delimiter=",")
+        save_to_s3(BUCKET_NAME, f"/tmp/xgboost_predictions_{TODAY}.csv", f"{MODEL_PATH}/xgboost_predictions_{TODAY}.csv")
         oof_name = 'predicted_target'
         identity_columns = ['male', 'female', 'homosexual_gay_or_lesbian', 'christian', 'jewish', 'muslim', 'black', 'white', 'psychiatric_or_mental_illness']
-        test_df[oof_name] = preds
+        test[oof_name] = predictions
         #evaluation
-        bias_metrics_df = compute_bias_metrics_for_model(test_df, identity_columns, oof_name, 'toxicity')
+        bias_metrics_df = compute_bias_metrics_for_model(test, identity_columns, oof_name, 'toxicity')
         log.info(print(bias_metrics_df))
-        FINAL_SCORE = get_final_metric(bias_metrics_df, calculate_overall_auc(test_df, oof_name))
+        FINAL_SCORE = get_final_metric(bias_metrics_df, calculate_overall_auc(test, oof_name))
         log.info(f"FINAL SCORE FOR XGBOOST IS {FINAL_SCORE}")    
                        
 if __name__ == "__main__":     
