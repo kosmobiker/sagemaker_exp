@@ -304,3 +304,8 @@ cython_debug/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
+data/
+torch_models/
+sandbox/.vector_cache
+loggings/
+tmp/
