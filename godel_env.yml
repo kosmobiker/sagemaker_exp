@@ -18,3 +18,5 @@ dependencies:
     - gensim==4.2.0
     - awswrangler==2.16.1
     - transformers==4.21.1
+    - xgboost
+    - optuna==3.0.2
