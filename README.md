@@ -78,3 +78,12 @@ ___
 + `API Gateway -> Lambda -> Sagemaker endpoint`
 + add full MLOps
 ___
+
+## Reference:
+
+- What Is Amazon SageMaker? - Amazon SageMaker. (2022). Retrieved October 14, 2022, from https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html 
+- Amazon SageMaker Python SDK — sagemaker 2.112.2 documentation. (2022). Retrieved October 14, 2022, from https://sagemaker.readthedocs.io/en/stable/index.html 
+- Jigsaw Unintended Bias in Toxicity Classification | Kaggle. Retrieved October 14, 2022, from https://www.kaggle.com/c/jigsaw-unintended-bias-in-toxicity-classification 
+- Jordan, J. (2021, January 3). Organizing machine learning projects: project management guidelines. Jeremy Jordan. Retrieved October 14, 2022, from https://www.jeremyjordan.me/ml-projects-guide/
+- Schmid, P. (2021, October 6). Scalable, Secure Hugging Face Transformer Endpoints with Amazon SageMaker, AWS Lambda, and CDK. Philschmid Blog. Retrieved October 14, 2022, from https://www.philschmid.de/huggingface-transformers-cdk-sagemaker-lambda
+
