@@ -8,6 +8,8 @@ import sys
 import argparse
 import os
 import torch
+import gc
+
 
 if __name__ == "__main__":
 
@@ -26,7 +28,7 @@ if __name__ == "__main__":
     parser.add_argument("--model-dir", type=str, default=os.environ["SM_MODEL_DIR"])
     parser.add_argument("--n_gpus", type=str, default=os.environ["SM_NUM_GPUS"])
     parser.add_argument("--training_dir", type=str, default=os.environ["SM_CHANNEL_TRAIN"])
-    parser.add_argument("--test_dir", type=str, default=os.environ["SM_CHANNEL_TEST"])
+    parser.add_argument("--validation_dir", type=str, default=os.environ["SM_CHANNEL_VALIDATION"])
     parser.add_argument("--output_dir", type=str)
 
 
@@ -43,11 +45,22 @@ if __name__ == "__main__":
 
     # load datasets
     train_dataset = load_from_disk(args.training_dir)
-    test_dataset = load_from_disk(args.test_dir)
+    validation_dataset = load_from_disk(args.validation_dir)
 
     logger.info(f" loaded train_dataset length is: {len(train_dataset)}")
-    logger.info(f" loaded test_dataset length is: {len(test_dataset)}")
-
+    logger.info(f" loaded validation_dataset length is: {len(validation_dataset)}")
+    
+    ##clean the cache
+    try:
+        gc.collect()
+        torch.cuda.empty_cache()
+        del model
+        del Trainer
+        del tokenizer
+    except Exception as err:
+        pass
+    
+    
     # compute metrics function for binary classification
     def compute_metrics(pred):
         labels = pred.label_ids
@@ -68,7 +81,7 @@ if __name__ == "__main__":
         per_device_train_batch_size=args.train_batch_size,
         per_device_eval_batch_size=args.eval_batch_size,
         warmup_steps=args.warmup_steps,
-        evaluation_strategy="epoch",
+        evaluation_strategy="steps",
         logging_dir=f"{args.output_data_dir}/logs",
         learning_rate=float(args.learning_rate),
     )
@@ -79,7 +92,7 @@ if __name__ == "__main__":
         args=training_args,
         compute_metrics=compute_metrics,
         train_dataset=train_dataset,
-        eval_dataset=test_dataset,
+        eval_dataset=validation_dataset,
         tokenizer=tokenizer,
     )
     
@@ -92,7 +105,7 @@ if __name__ == "__main__":
         trainer.train()
 
     # evaluate model
-    eval_result = trainer.evaluate(eval_dataset=test_dataset)
+    eval_result = trainer.evaluate(eval_dataset=validation_dataset)
 
     # writes eval result to file which can be accessed later in s3 ouput
     with open(os.path.join(args.output_data_dir, "eval_results.txt"), "w") as writer:
