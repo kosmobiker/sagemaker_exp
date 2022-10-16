@@ -86,4 +86,6 @@ ___
 - Jigsaw Unintended Bias in Toxicity Classification | Kaggle. Retrieved October 14, 2022, from https://www.kaggle.com/c/jigsaw-unintended-bias-in-toxicity-classification 
 - Jordan, J. (2021, January 3). Organizing machine learning projects: project management guidelines. Jeremy Jordan. Retrieved October 14, 2022, from https://www.jeremyjordan.me/ml-projects-guide/
 - Schmid, P. (2021, October 6). Scalable, Secure Hugging Face Transformer Endpoints with Amazon SageMaker, AWS Lambda, and CDK. Philschmid Blog. Retrieved October 14, 2022, from https://www.philschmid.de/huggingface-transformers-cdk-sagemaker-lambda
+- Card, D., Gabriel, S., Choi, Y., & Smith, N. A. (2019). The Risk of Racial Bias in Hate Speech Detection. Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics. https://doi.org/10.18653/v1/p19-1163
+
 
