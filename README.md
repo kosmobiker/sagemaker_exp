@@ -75,7 +75,7 @@ ___
 ## Future improvements
 
 + Multilanguage model
-+ `API Gateway -> Lambda -> Sagemaker endpoint`
++ `API Gateway -> Lambda -> Sagemaker endpoint` will be developed
 + add full MLOps
 ___
 
