@@ -8,6 +8,14 @@ MODEL_NAME = 'unitary/unbiased-toxic-roberta'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 sigmoid = torch.nn.Sigmoid()
 
+def input_fn(serialized_input_data, content_type=JSON_CONTENT_TYPE):
+    if content_type == JSON_CONTENT_TYPE:
+        input_data = json.loads(serialized_input_data)
+        return input_data
+    else:
+        raise Exception('Requested unsupported ContentType in Accept: ' + content_type)
+        return
+
 
 def model_fn(model_dir):
     tokenizer_init = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -23,15 +31,6 @@ def model_fn(model_dir):
     
     return (model, tokenizer_init, labels)
 
-
-def input_fn(serialized_input_data, content_type=JSON_CONTENT_TYPE):
-    if content_type == JSON_CONTENT_TYPE:
-        input_data = json.loads(serialized_input_data)
-        return input_data
-    else:
-        raise Exception('Requested unsupported ContentType in Accept: ' + content_type)
-        return
-    
 
 def predict_fn(input_data, models):
 

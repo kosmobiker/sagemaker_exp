@@ -4,9 +4,18 @@ import torch
 import numpy as np
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoConfig
 
+JSON_CONTENT_TYPE = 'application/json'
 MODEL_NAME = 'unitary/unbiased-toxic-roberta'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 sigmoid = torch.nn.Sigmoid()
+
+def input_fn(serialized_input_data, content_type=JSON_CONTENT_TYPE):
+    if content_type == JSON_CONTENT_TYPE:
+        input_data = json.loads(serialized_input_data)
+        return input_data
+    else:
+        raise Exception('Requested unsupported ContentType in Accept: ' + content_type)
+        return
 
 def model_fn(model_dir):
     """
@@ -31,3 +40,10 @@ def predict_fn(input_data, models):
         outputs = model(**inputs)[0][0]
     probas = sigmoid(outputs).cpu().detach().numpy().astype('str')
     return dict(zip(labels, probas))
+
+
+def output_fn(prediction_output, accept=JSON_CONTENT_TYPE):
+    if accept == JSON_CONTENT_TYPE:
+        return json.dumps(prediction_output), accept
+    
+    raise Exception('Requested unsupported ContentType in Accept: ' + accept)
