@@ -28,34 +28,23 @@ def model_fn(model_dir):
         model = torch.jit.load(f'{model_dir}/model_neuron.pt')
     else: 
         model = AutoModelForSequenceClassification.from_pretrained(model_dir).to(device)
-    
     return (model, tokenizer_init, labels)
 
 
 def predict_fn(input_data, models):
-
+    # Initialize models and tokenizer
     model, tokenizer, labels = models
-    sequence = input_data[0] 
-    
-    max_length = 512
-    tokenized_sequence_pair = tokenizer.encode_plus(sequence,
-                                                    max_length=max_length,
-                                                    padding='max_length',
-                                                    truncation=True,
-                                                    return_tensors='pt').to(device)
-    
-    # Convert example inputs to a format that is compatible with TorchScript tracing
-    inputs = tokenized_sequence_pair['input_ids'], tokenized_sequence_pair['attention_mask']
-    
+    # Tokenize sentences
+    sentences = input_data.pop("inputs", input_data)
+    inputs = tokenizer(sentences, padding=True, max_length=512, truncation=True, return_tensors='pt').to(device)
     with torch.no_grad():
-        outputs = model(*inputs)[0][0]
-    
-    probas = sigmoid(outputs).cpu().detach().numpy().astype('str')
-    return dict(zip(labels, probas))
+        model.to(device)
+        outputs = model(**inputs).logits
+        probas = sigmoid(outputs).cpu().detach().numpy().round(3).astype('str')
+    return [dict(zip(labels, probas[i])) for i in range(len(probas))]
 
 
 def output_fn(prediction_output, accept=JSON_CONTENT_TYPE):
     if accept == JSON_CONTENT_TYPE:
         return json.dumps(prediction_output), accept
-    
     raise Exception('Requested unsupported ContentType in Accept: ' + accept)

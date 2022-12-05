@@ -37,9 +37,9 @@ def predict_fn(input_data, models):
     inputs = tokenizer(sentences, padding=True, max_length=512, truncation=True, return_tensors='pt').to(device)
     with torch.no_grad():
         model.to(device)
-        outputs = model(**inputs)[0][0]
-    probas = sigmoid(outputs).cpu().detach().numpy().astype('str')
-    return dict(zip(labels, probas))
+        outputs = model(**inputs).logits
+        probas = sigmoid(outputs).cpu().detach().numpy().round(3).astype('str')
+    return [dict(zip(labels, probas[i])) for i in range(len(probas))]
 
 
 def output_fn(prediction_output, accept=JSON_CONTENT_TYPE):
