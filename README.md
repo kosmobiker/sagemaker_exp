@@ -1,3 +1,8 @@
+# Godel Innovations MeetUp
+
+<img src="https://engineering.godeltech.com/wp-content/uploads/sites/4/2020/06/godel-full-logo.png" alt="drawing" width="500"/>
+
+___
 # AWS Sagemaker: Toxic Comment Detection
 
 ## Goals
@@ -16,7 +21,9 @@ At the end of 2017 the Civil Comments platform shut down and chose make their ~2
 
 In the data supplied for this competition, the text of the individual comment is found in the comment_text column. Each comment in Train has a toxicity label (target), and models should predict the target toxicity for the Test data. This attribute (and all others) are fractional values which represent the fraction of human raters who believed the attribute applied to the given comment. For evaluation, test set examples with target >= 0.5 will be considered to be in the positive class (toxic).
 
-General info about dataset:
+### General info about dataset:
+
+
 +  ~2M public comments
 + CSV file (873.6 MB) 
 + labeled by humans
@@ -61,21 +68,24 @@ ___
   * Text preprocessing
       + Text cleaning (removing HTML/XML tags, figures, formula, etc.)
       + Removing stop words
-      + Tokenization (*tf-idf, word2vec, BertTokenizer)
+      + Tokenization (tf-idf, word2vec, BertTokenizer)
   * Model training
-      + Baseline with tfidf and xgboost (score ~ 89%)
-      + GloVe and LSTM (score ~ 90%)
-      + transformers using `unitary/unbiased-toxic-roberta` model (score ~ 93%)
+      + Baseline with tf-idf and xgboost (score ~ 89%)
+      + More advanced moidel using GloVe embedding and LSTM network (score ~ 90%)
+      + Pre-trained HuggingFace model `unitary/unbiased-toxic-roberta` (score ~ 93%)
 + Deploy model
     * Real-time endpoint [x]
     * AWS Inf1 endpoint [x]
     * Asynch endpooint [x]
     * Serverless endpoint [ ]
     
++ Public deployment of the selected model
+    * API Gateway -> Lambda -> Sagemaker endpoint
+    * Performance benchmarking
+    
 ## Future improvements
 
 + Multilanguage model
-+ `API Gateway -> Lambda -> Sagemaker endpoint` will be developed
 + add full MLOps
 ___
 

@@ -22,7 +22,7 @@ def model_fn(model_dir):
     Here we define tokenizer and model
     """
     tokenizer_init = AutoTokenizer.from_pretrained(MODEL_NAME)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, return_dict=False).eval().to(device)
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME).eval().to(device)
     model_config = AutoConfig.from_pretrained(MODEL_NAME)
     labels = {k: v for k, v in sorted(model_config.label2id.items(), key=lambda item: item[1])}.keys()
 
