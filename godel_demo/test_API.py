@@ -3,7 +3,7 @@ import requests
 #provide values
 restapi_id = ''
 region = 'eu-west-1'
-stage_name = ''
+stage_name = 'staging'
 
 INVOKE_URL = f"https://{restapi_id}.execute-api.{region}.amazonaws.com/{stage_name}"
 
@@ -20,5 +20,4 @@ def main():
 
 
 if __name__ == "__main__":
-    for _ in range(1000):
-        main()
+    main()
